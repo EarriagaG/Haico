@@ -19,7 +19,7 @@ export default function Hero() {
       {/* 🎥 Video de fondo */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
-        src="/haico-video.mp4"
+        src="/videos/Haico-sim.mp4" // 🔁 Path corregido
         autoPlay
         loop
         muted
