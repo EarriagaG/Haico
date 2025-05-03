@@ -1,22 +1,49 @@
 'use client';
 
-import Hero from '../components/Hero';
-import Viewer3D from '../components/Viewer3D';
+import { useEffect, useState } from 'react';
+import IntroOverlay from '../components/IntroOverlay';
+import FullScreenSection from '../components/FullScreenSection';
+import Timeline from '../components/Timeline';
 
-export default function Home() {
+export default function HomePage() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 3500); // Duración de intro
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-white">
-      <Hero />
+    <main className="w-full h-full overflow-hidden">
+      {/* Intro animada */}
+      {showIntro && <IntroOverlay />}
 
-      <section className="max-w-5xl mx-auto text-center py-10 px-4">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Visualización 3D</h2>
-        <p className="text-gray-600 mb-6">
-          Integrado con Three.js y React Three Fiber
-        </p>
+      {/* Contenido principal con scroll tipo presentación */}
+      {!showIntro && (
+        <div className="h-screen snap-y snap-mandatory overflow-y-scroll scroll-smooth">
+          <FullScreenSection
+            videoSrc="/videos/sample1.mp4"
+            title="Haico Urbanización"
+            subtitle="Infraestructura con visión tecnológica"
+            color="bg-blue-900"
+          />
+          <FullScreenSection
+            videoSrc="/videos/sample2.mp4"
+            title="Haico Proyectos"
+            subtitle="Diseño, modelado y desarrollos activos"
+            color="bg-slate-800"
+          />
+          <FullScreenSection
+            videoSrc="/videos/sample3.mp4"
+            title="Haico Concretos"
+            subtitle="Soluciones especializadas y logística a obra"
+            color="bg-neutral-900"
+          />
 
-        {/* Carga del modelo principal */}
-        <Viewer3D path="/models/convenience_store.glb" height={700} />
-      </section>
+          {/* Línea del tiempo */}
+          <Timeline />
+        </div>
+      )}
     </main>
   );
 }

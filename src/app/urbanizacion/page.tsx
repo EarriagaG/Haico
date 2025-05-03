@@ -27,6 +27,13 @@ const servicios = [
       'Construcción de vialidades urbanas con concreto hidráulico o carpeta asfáltica, banquetas de concreto y guarniciones con acabados profesionales.',
     images: ['/img/pav1.jpg', '/img/pav2.jpg'],
   },
+  {
+    title: 'Maquinaria',
+    desc: 'Concreto o asfalto con banquetas y señalización.',
+    fullDesc:
+      'Construcción de vialidades urbanas con concreto hidráulico o carpeta asfáltica, banquetas de concreto y guarniciones con acabados profesionales.',
+    images: ['/img/pav1.jpg', '/img/pav2.jpg'],
+  },
 ];
 
 export default function Urbanizacion() {

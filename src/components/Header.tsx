@@ -9,9 +9,11 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold text-blue-700">Haico</Link>
         <nav className="space-x-4 text-sm md:text-base font-medium text-gray-700">
           <Link href="/urbanizacion" className="hover:text-blue-600">Urbanización</Link>
+          <Link href="/vireo" className="hover:text-blue-600">Construcción y Edificación</Link>
           <Link href="/proyectos" className="hover:text-blue-600">Proyectos</Link>
           <Link href="/concreto" className="hover:text-blue-600">Concreto</Link>
-          <Link href="/vireo" className="hover:text-blue-600">Vireo</Link>
+          <Link href="/vireo" className="hover:text-blue-600">Alianzas</Link>
+          
         </nav>
       </div>
     </header>
