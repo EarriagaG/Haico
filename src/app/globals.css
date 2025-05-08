@@ -9,3 +9,8 @@
     cursor: none !important;
   }
   
+  html, body {
+    height: 100%;
+    overflow-y: scroll;
+  }
+  
