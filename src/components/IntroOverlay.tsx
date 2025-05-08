@@ -10,92 +10,65 @@ export default function IntroOverlay() {
   const logoBlueRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    // Ajustar tamaño del canvas al montar
-    if (canvasRef.current) {
-      canvasRef.current.width = window.innerWidth;
-      canvasRef.current.height = window.innerHeight;
-    }
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
 
-    // Preparar animación GSAP
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    gsap.set([logoWhiteRef.current, logoBlueRef.current], {
+      opacity: 0,
+      scale: 1,
+      y: 0,
+    });
+
     const tl = gsap.timeline();
 
-    gsap.set(overlayRef.current, { opacity: 1, pointerEvents: 'auto' });
-    gsap.set(logoWhiteRef.current, { opacity: 0, scale: 1, y: 0 });
-    gsap.set(logoBlueRef.current, { opacity: 0, scale: 1, y: 0 });
-    clearCanvas();
-
-    tl.to(logoWhiteRef.current, { opacity: 1, duration: 1.2 })
+    tl.to(logoWhiteRef.current, { opacity: 1, duration: 0.8 })
       .to(logoWhiteRef.current, { y: -30, duration: 0.3 })
       .to(logoWhiteRef.current, {
         y: 0,
-        duration: 0.3,
+        duration: 0.2,
         onStart: () => {
-          triggerDust();
-          shakeScreen();
+          startDust(ctx, canvas);
+          shake(overlayRef.current);
         },
       })
       .to(logoWhiteRef.current, {
-        scale: 1.4,
+        scale: 1.2,
         opacity: 0,
-        duration: 2,
-        delay: 2.2,
+        duration: 1.5,
+        delay: 2,
       })
       .to(
         logoBlueRef.current,
         {
-          scale: 1.5,
+          scale: 1.25,
           opacity: 1,
-          duration: 1.5,
+          duration: 1.2,
         },
         '<'
       );
   }, []);
 
-  const shakeScreen = () => {
-    if (overlayRef.current) {
-      gsap.fromTo(
-        overlayRef.current,
-        { x: -8 },
-        {
-          x: 8,
-          duration: 0.1,
-          ease: 'power2.inOut',
-          yoyo: true,
-          repeat: 5,
-        }
-      );
-    }
-  };
-
-  const clearCanvas = () => {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (ctx && canvasRef.current) {
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    }
-  };
-
-  const triggerDust = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const particles = Array.from({ length: 200 }, () => ({
+  const startDust = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const particles = Array.from({ length: 180 }, () => ({
       x: canvas.width / 2,
       y: canvas.height / 2,
       vx: (Math.random() - 0.5) * 12,
-      vy: (Math.random() - 0.5) * 10,
+      vy: (Math.random() - 0.5) * 8,
       size: Math.random() * 3 + 1,
       opacity: 1,
     }));
 
     const animate = () => {
-      clearCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
         p.opacity -= 0.008;
-        ctx.fillStyle = `rgba(200, 200, 200, ${p.opacity})`;
+        ctx.fillStyle = `rgba(200,200,200,${p.opacity})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
@@ -109,27 +82,48 @@ export default function IntroOverlay() {
     animate();
   };
 
+  const shake = (element: HTMLElement | null) => {
+    if (!element) return;
+    gsap.fromTo(
+      element,
+      { x: -8 },
+      {
+        x: 8,
+        duration: 0.1,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: 5,
+      }
+    );
+  };
+
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 bg-white z-[9999] flex items-center justify-center transition-opacity duration-1000"
-    >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      />
-      <img
-        ref={logoWhiteRef}
-        src="/HAICO blanco.svg"
-        alt="Haico Blanco"
-        className="absolute w-60 sm:w-72 md:w-80"
-      />
+    <>
+      {/* Animación de introducción */}
+      <section
+        ref={overlayRef}
+        className="relative w-full h-screen bg-white overflow-hidden flex items-center justify-center"
+      >
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none"
+        />
+        <img
+          ref={logoWhiteRef}
+          src="/HAICO blanco.svg"
+          alt="Haico Blanco"
+          className="absolute w-60 sm:w-72 md:w-80"
+        />
+      </section>
+
+      {/* Logo azul flotante */}
       <img
         ref={logoBlueRef}
         src="/HAICO azul.svg"
         alt="Haico Azul"
-        className="absolute w-60 sm:w-72 md:w-80"
+        className="fixed top-6 left-6 w-24 sm:w-28 md:w-32 z-[999] pointer-events-none opacity-0"
+        style={{ transition: 'opacity 1s ease, transform 1s ease' }}
       />
-    </div>
+    </>
   );
 }
