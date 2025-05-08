@@ -1,114 +1,57 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
-interface Props {
-  visible: boolean;
-}
-
-export default function IntroOverlay({ visible }: Props) {
+export default function IntroOverlay() {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoWhiteRef = useRef<HTMLImageElement>(null);
   const logoBlueRef = useRef<HTMLImageElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasReady, setCanvasReady] = useState(false);
 
-  // Preparar canvas al montar
   useEffect(() => {
+    // Ajustar tamaño del canvas al montar
     if (canvasRef.current) {
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
-      setCanvasReady(true);
     }
-  }, []);
 
-  // Ejecutar animación solo si está visible
-  useEffect(() => {
-    if (!canvasReady || !visible) return;
-
+    // Preparar animación GSAP
     const tl = gsap.timeline();
 
-    // Reset
     gsap.set(overlayRef.current, { opacity: 1, pointerEvents: 'auto' });
     gsap.set(logoWhiteRef.current, { opacity: 0, scale: 1, y: 0 });
     gsap.set(logoBlueRef.current, { opacity: 0, scale: 1, y: 0 });
     clearCanvas();
 
-    tl.to(logoWhiteRef.current, { opacity: 1, duration: 0.8 })
+    tl.to(logoWhiteRef.current, { opacity: 1, duration: 1.2 })
       .to(logoWhiteRef.current, { y: -30, duration: 0.3 })
       .to(logoWhiteRef.current, {
         y: 0,
-        duration: 0.2,
+        duration: 0.3,
         onStart: () => {
-          startDust();
-          shakeOverlay();
+          triggerDust();
+          shakeScreen();
         },
       })
       .to(logoWhiteRef.current, {
-        scale: 1.2,
-        opacity: 0,
-        duration: 1.5,
-        delay: 2.5,
-      })
-      .to(logoBlueRef.current, {
-        scale: 1.25,
-        opacity: 1,
-        duration: 1.2,
-      }, "<")
-      .to(overlayRef.current, {
+        scale: 1.4,
         opacity: 0,
         duration: 2,
-        delay: 1,
-        onComplete: () => {
-          gsap.set(overlayRef.current, { pointerEvents: 'none' });
+        delay: 2.2,
+      })
+      .to(
+        logoBlueRef.current,
+        {
+          scale: 1.5,
+          opacity: 1,
+          duration: 1.5,
         },
-      });
-  }, [canvasReady, visible]);
+        '<'
+      );
+  }, []);
 
-  const clearCanvas = () => {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (ctx && canvasRef.current) {
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    }
-  };
-
-  const startDust = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const particles = Array.from({ length: 180 }, () => ({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      vx: (Math.random() - 0.5) * 12,
-      vy: (Math.random() - 0.5) * 8,
-      size: Math.random() * 3 + 1,
-      opacity: 1,
-    }));
-
-    const animate = () => {
-      clearCanvas();
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.opacity -= 0.008;
-        ctx.fillStyle = `rgba(200, 200, 200, ${p.opacity})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      if (particles.some(p => p.opacity > 0)) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    animate();
-  };
-
-  const shakeOverlay = () => {
+  const shakeScreen = () => {
     if (overlayRef.current) {
       gsap.fromTo(
         overlayRef.current,
@@ -124,8 +67,47 @@ export default function IntroOverlay({ visible }: Props) {
     }
   };
 
-  // Si no está visible, no renderizar nada
-  if (!visible) return null;
+  const clearCanvas = () => {
+    const ctx = canvasRef.current?.getContext('2d');
+    if (ctx && canvasRef.current) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+  };
+
+  const triggerDust = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const particles = Array.from({ length: 200 }, () => ({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 10,
+      size: Math.random() * 3 + 1,
+      opacity: 1,
+    }));
+
+    const animate = () => {
+      clearCanvas();
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.opacity -= 0.008;
+        ctx.fillStyle = `rgba(200, 200, 200, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      if (particles.some((p) => p.opacity > 0)) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+  };
 
   return (
     <div
