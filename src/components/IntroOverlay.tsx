@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 export default function IntroOverlay() {
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const [showBlueLogo, setShowBlueLogo] = useState(false);
+
+  const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoWhiteRef = useRef<HTMLImageElement>(null);
   const logoBlueRef = useRef<HTMLImageElement>(null);
@@ -32,7 +34,7 @@ export default function IntroOverlay() {
         duration: 0.2,
         onStart: () => {
           startDust(ctx, canvas);
-          shake(overlayRef.current);
+          shake(sectionRef.current);
         },
       })
       .to(logoWhiteRef.current, {
@@ -44,11 +46,12 @@ export default function IntroOverlay() {
       .to(
         logoBlueRef.current,
         {
-          scale: 1.25,
           opacity: 1,
+          scale: 1.25,
           duration: 1.2,
+          onComplete: () => setShowBlueLogo(true),
         },
-        '<'
+        '+=0.2'
       );
   }, []);
 
@@ -98,32 +101,43 @@ export default function IntroOverlay() {
   };
 
   return (
-    <>
-      {/* Animación de introducción */}
-      <section
-        ref={overlayRef}
-        className="relative w-full h-screen bg-white overflow-hidden flex items-center justify-center"
-      >
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full pointer-events-none"
-        />
-        <img
-          ref={logoWhiteRef}
-          src="/HAICO blanco.svg"
-          alt="Haico Blanco"
-          className="absolute w-60 sm:w-72 md:w-80"
-        />
-      </section>
+    <section
+      ref={sectionRef}
+      className="relative w-full min-h-screen bg-gray-100 overflow-hidden flex items-center justify-center"
+    >
+      {/* 🎥 Video de fondo */}
+      <video
+        src="/videos/jaico-Sim.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
-      {/* Logo azul flotante */}
+      {/* 🌫 Canvas de polvo */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
+
+      {/* Logo blanco animado */}
+      <img
+        ref={logoWhiteRef}
+        src="/HAICO blanco.svg"
+        alt="Logo blanco"
+        className="absolute w-60 sm:w-72 md:w-80"
+      />
+
+      {/* Logo azul permanente */}
       <img
         ref={logoBlueRef}
         src="/HAICO azul.svg"
-        alt="Haico Azul"
-        className="fixed top-6 left-6 w-24 sm:w-28 md:w-32 z-[999] pointer-events-none opacity-0"
-        style={{ transition: 'opacity 1s ease, transform 1s ease' }}
+        alt="Logo azul"
+        className={`absolute w-60 sm:w-72 md:w-80 transition-opacity ${
+          showBlueLogo ? 'opacity-100' : 'opacity-0'
+        }`}
       />
-    </>
+    </section>
   );
 }
