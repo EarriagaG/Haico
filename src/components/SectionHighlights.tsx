@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Construction, Truck, Building2, Scan, Activity } from 'lucide-react';
+import { Home, Truck, Building2, Scan, Activity } from 'lucide-react';
+import Card3D from './Card3d';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +13,7 @@ const stats = [
     value: '+1,800',
     label: 'viviendas urbanizadas',
     description: 'Infraestructura urbana entregada con precisión.',
-    icon: Building2,
+    icon: Home,
   },
   {
     value: '+150,000 m³',
@@ -24,7 +25,7 @@ const stats = [
     value: '+15',
     label: 'desarrollos entre 2021–2024',
     description: 'Obras ejecutadas con procesos digitalizados.',
-    icon: Construction,
+    icon: Building2,
   },
   {
     value: '100%',
@@ -62,6 +63,7 @@ export default function SectionHighlights() {
         );
       });
     }, sectionRef);
+
     return () => ctx.revert();
   }, []);
 
@@ -70,26 +72,23 @@ export default function SectionHighlights() {
       ref={sectionRef}
       className="relative w-full bg-white py-32 px-6 flex flex-col items-center text-center overflow-hidden"
     >
-      {/* Fondo blueprint alternativo */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-white to-blue-50 [mask-image:radial-gradient(circle,white,transparent_80%)] opacity-10 animate-pulse"></div>
+      {/* Fondo técnico tipo grid animado */}
+      <div className="absolute inset-0 z-0 bg-grid-dots [background-size:24px_24px] opacity-10 animate-pulse-slow"></div>
 
       {/* Microcopy central */}
       <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 mb-12 relative z-10 max-w-3xl">
         Transformamos el terreno en infraestructura viva. La tecnología es nuestra herramienta, la precisión nuestra promesa.
       </h2>
 
-      {/* Cifras clave con iconos, formato horizontal */}
+      {/* Tarjetas con cifras clave */}
       <div className="flex flex-wrap justify-center gap-8 max-w-6xl z-10">
         {stats.map(({ value, label, description, icon: Icon }, idx) => (
-          <div
-            key={idx}
-            className="stat relative flex flex-col items-center text-center p-6 w-64 rounded-xl bg-white shadow-md border border-blue-100 space-y-3"
-          >
+          <Card3D key={idx} className="stat w-64">
             <Icon className="w-10 h-10 text-blue-600" />
             <h3 className="text-3xl font-bold text-blue-600">{value}</h3>
             <p className="text-lg font-medium text-gray-800">{label}</p>
             <p className="text-sm text-gray-500">{description}</p>
-          </div>
+          </Card3D>
         ))}
       </div>
     </section>
